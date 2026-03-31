@@ -1,0 +1,25 @@
+{
+  "name": "serverweb",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000s\u0000e\u0000r\u0000v\u0000e\u0000r\u0000-\u0000w\u0000e\u0000b\u0000\r\u0000 \u0000",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^7.6.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "express-validator": "^7.3.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "node-cron": "^4.2.1",
+    "pg": "^8.20.0"
+  }
+}
