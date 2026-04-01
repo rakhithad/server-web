@@ -33,4 +33,61 @@ model Profile {
   profileImageUrl String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  degrees        Degree[]
+  certifications Certification[]
+  licences       Licence[]
+  courses        Course[]
+  employments    EmploymentHistory[]
+
+}
+
+model Degree {
+  id             Int      @id @default(autoincrement())
+  profileId      Int
+  profile        Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  title          String
+  institution    String
+  universityUrl  String   
+  completionDate DateTime @db.Date
+}
+
+model Certification {
+  id             Int      @id @default(autoincrement())
+  profileId      Int
+  profile        Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  title          String
+  awardingBody   String
+  courseUrl      String   
+  completionDate DateTime @db.Date
+}
+
+model Licence {
+  id             Int      @id @default(autoincrement())
+  profileId      Int
+  profile        Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  title          String
+  awardingBody   String
+  licenceUrl     String   
+  completionDate DateTime @db.Date
+}
+
+model Course {
+  id             Int      @id @default(autoincrement())
+  profileId      Int
+  profile        Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  title          String
+  provider       String
+  courseUrl      String   
+  completionDate DateTime @db.Date
+}
+
+model EmploymentHistory {
+  id             Int      @id @default(autoincrement())
+  profileId      Int
+  profile        Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  jobTitle       String
+  company        String
+  startDate      DateTime @db.Date
+  endDate        DateTime? @db.Date 
 }
