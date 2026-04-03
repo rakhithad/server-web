@@ -1,6 +1,6 @@
 const express = require('express');
 const AuthController = require('../controllers/AuthController');
-const { registerValidation, loginValidation } = require('../middlewares/authValidator');
+const { registerValidation, loginValidation, passwordResetRequestValidation, passwordResetValidation } = require('../middlewares/authValidator');
 const { requireAuth } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
@@ -17,5 +17,9 @@ router.get('/me', requireAuth, (req, res) => {
         user: req.user 
     });
 });
+
+router.post('/request-reset', passwordResetRequestValidation, AuthController.requestPasswordReset);
+
+router.post('/reset-password/:token', passwordResetValidation, AuthController.resetPassword);
 
 module.exports = router;

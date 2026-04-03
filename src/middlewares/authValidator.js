@@ -22,4 +22,17 @@ const loginValidation = [
     body('password').notEmpty().withMessage('Password is required')
 ];
 
-module.exports = { registerValidation, loginValidation };
+const passwordResetRequestValidation = [
+    body('email').isEmail().withMessage('Please provide a valid email')
+];
+
+const passwordResetValidation = [
+    body('password')
+        .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
+        .matches(/\d/).withMessage('Password must contain a number')
+        .matches(/[A-Z]/).withMessage('Password must contain an uppercase letter')
+        .matches(/[!@#$%^&*(),.?":{}|<>]/).withMessage('Password must contain a special character')
+];
+
+
+module.exports = { registerValidation, loginValidation, passwordResetRequestValidation, passwordResetValidation };
