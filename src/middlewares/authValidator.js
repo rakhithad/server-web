@@ -16,4 +16,10 @@ const registerValidation = [
         .matches(/[!@#$%^&*(),.?":{}|<>]/).withMessage('Password must contain a special character')
 ];
 
-module.exports = { registerValidation };
+
+const loginValidation = [
+    body('email').isEmail().withMessage('Please provide a valid email'),
+    body('password').notEmpty().withMessage('Password is required')
+];
+
+module.exports = { registerValidation, loginValidation };

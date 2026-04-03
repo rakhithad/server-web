@@ -1,6 +1,8 @@
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
 const { validationResult } = require('express-validator');
+const { generateSecureToken } = require('../utils/tokenGenerator');
+const jwt = require('jsonwebtoken')
 
 const prisma = new PrismaClient();
 
@@ -51,7 +53,7 @@ class AuthController {
     }
 
 
-    
+
     static async verifyEmail(req, res) {
         try {
             const { token } = req.params;
@@ -70,7 +72,7 @@ class AuthController {
 
             await prisma.user.update({
                 where: { id: tokenRecord.userId },
-                data: { isVerified: true }
+                data: { isEmailVerified: true }
             });
 
             await prisma.token.delete({
@@ -81,6 +83,48 @@ class AuthController {
 
         } catch (error) {
             console.error('Verification Error:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
+
+    static async login(req, res) {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+
+            const { email, password } = req.body;
+
+            const user = await prisma.user.findUnique({ where: { email } });
+            if (!user) {
+                return res.status(401).json({ message: 'Invalid email or password' });
+            }
+
+            const isMatch = await bcrypt.compare(password, user.passwordHash);
+            if (!isMatch) {
+                return res.status(401).json({ message: 'Invalid email or password' });
+            }
+
+            if (!user.isEmailVerified) {
+                return res.status(403).json({ message: 'Please verify your email before logging in.' });
+            }
+
+            const token = jwt.sign(
+                { userId: user.id, email: user.email },
+                process.env.JWT_SECRET,
+                { expiresIn: '1h' }
+            );
+
+            res.status(200).json({
+                message: 'Login successful',
+                token: token,
+                expiresIn: '1h'
+            });
+
+        } catch (error) {
+            console.error('Login Error:', error);
             res.status(500).json({ message: 'Internal server error' });
         }
     }

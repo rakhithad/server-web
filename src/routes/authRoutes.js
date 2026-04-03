@@ -1,11 +1,21 @@
 const express = require('express');
 const AuthController = require('../controllers/AuthController');
-const { registerValidation } = require('../middlewares/authValidator');
+const { registerValidation, loginValidation } = require('../middlewares/authValidator');
+const { requireAuth } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
 router.post('/register', registerValidation, AuthController.register);
+router.post('/login', loginValidation, AuthController.login);
 
 router.get('/verify-email/:token', AuthController.verifyEmail);
+
+//test
+router.get('/me', requireAuth, (req, res) => {
+    res.status(200).json({ 
+        message: 'You have successfully accessed a protected route!',
+        user: req.user 
+    });
+});
 
 module.exports = router;
