@@ -7,6 +7,7 @@ const authRoutes = require('./routes/authRoutes');
 const path = require('path');
 const profileRoutes = require('./routes/profileRoutes');
 const portfolioRoutes = require('./routes/portfolioRoutes');
+const bidRoutes = require('./routes/bidRoutes');
 
 
 
@@ -29,7 +30,7 @@ app.use('/api/auth', authRoutes);
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/api/profile', profileRoutes);
 app.use('/api/portfolio', portfolioRoutes);
-
+app.use('/api/bids', bidRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
