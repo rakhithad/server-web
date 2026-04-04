@@ -6,6 +6,9 @@ require('dotenv').config();
 const authRoutes = require('./routes/authRoutes');
 const path = require('path');
 const profileRoutes = require('./routes/profileRoutes');
+const portfolioRoutes = require('./routes/portfolioRoutes');
+
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,6 +28,8 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/api/profile', profileRoutes);
+app.use('/api/portfolio', portfolioRoutes);
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
