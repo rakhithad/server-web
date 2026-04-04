@@ -22,4 +22,10 @@ router.post('/request-reset', passwordResetRequestValidation, AuthController.req
 
 router.post('/reset-password/:token', passwordResetValidation, AuthController.resetPassword);
 
+
+router.post('/api-key', requireAuth, AuthController.generateApiKey);
+router.post('/revoke-key', requireAuth, AuthController.revokeApiKey);
+
+
+
 module.exports = router;

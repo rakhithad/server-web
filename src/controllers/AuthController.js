@@ -215,6 +215,56 @@ class AuthController {
         }
     }
 
+    static async generateApiKey(req, res) {
+        try {
+            const userId = req.user.userId;
+            const tokenStr = generateSecureToken();
+            
+            const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+
+            const apiKey = await prisma.token.create({
+                data: {
+                    userId: userId,
+                    token: `ak_${tokenStr}`, 
+                    type: 'API_KEY',
+                    expiresAt: expiresAt
+                }
+            });
+
+            res.status(201).json({
+                message: 'API Key generated successfully. Please copy it now, you will not be able to see it again.',
+                apiKey: apiKey.token
+            });
+        } catch (error) {
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
+    static async revokeApiKey(req, res) {
+        try {
+            const { token } = req.body;
+            const userId = req.user.userId;
+
+            const existingToken = await prisma.token.findFirst({
+                where: { token: token, userId: userId, type: 'API_KEY' }
+            });
+
+            if (!existingToken) {
+                return res.status(404).json({ message: 'API Key not found or unauthorized' });
+            }
+
+            await prisma.token.update({
+                where: { id: existingToken.id },
+                data: { isRevoked: true }
+            });
+
+            res.status(200).json({ message: 'API Key revoked successfully' });
+        } catch (error) {
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
+
 }
 
 module.exports = AuthController;
