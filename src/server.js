@@ -8,6 +8,7 @@ const path = require('path');
 const profileRoutes = require('./routes/profileRoutes');
 const portfolioRoutes = require('./routes/portfolioRoutes');
 const bidRoutes = require('./routes/bidRoutes');
+const { startCronJobs } = require('./jobs/cronJobs');
 
 
 
@@ -31,6 +32,10 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/api/profile', profileRoutes);
 app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/bids', bidRoutes);
+
+
+
+startCronJobs();
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

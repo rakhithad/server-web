@@ -9,4 +9,6 @@ router.use(requireAuth);
 
 router.post('/', bidValidation, BidController.placeOrUpdateBid);
 
+router.get('/status', BidController.getBidStatus);
+
 module.exports = router;

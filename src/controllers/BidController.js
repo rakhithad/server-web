@@ -100,6 +100,46 @@ class BidController {
             res.status(500).json({ message: 'Internal server error' });
         }
     }
+    
+
+    static async getBidStatus(req, res) {
+        try {
+            const { targetDate } = req.query; 
+            if (!targetDate) {
+                return res.status(400).json({ message: 'targetDate query parameter is required' });
+            }
+
+            const formattedDate = new Date(targetDate);
+            const userId = req.user.userId;
+
+            const bid = await prisma.bid.findUnique({
+                where: {
+                    userId_targetDate: { userId: userId, targetDate: formattedDate }
+                }
+            });
+
+            if (!bid) {
+                return res.status(200).json({ 
+                    hasBid: false, 
+                    message: 'You have not placed a bid for this date.' 
+                });
+            }
+
+            res.status(200).json({
+                hasBid: true,
+                yourAmount: bid.amount,
+                isWinning: bid.isWinning,
+                message: bid.isWinning ? "You are currently the highest bidder!" : "You have been outbid. Increase your bid to win."
+            });
+
+        } catch (error) {
+            console.error('Get Bid Status Error:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
+
+
 }
 
 module.exports = BidController;
