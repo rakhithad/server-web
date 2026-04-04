@@ -105,6 +105,9 @@ model Token {
   expiresAt DateTime
   isRevoked Boolean  @default(false) 
   createdAt DateTime @default(now())
+
+  usageCount  Int      @default(0)
+  lastUsedAt  DateTime?
 }
 
 model Bid {

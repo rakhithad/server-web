@@ -11,6 +11,9 @@ const bidRoutes = require('./routes/bidRoutes');
 const { startCronJobs } = require('./jobs/cronJobs');
 const publicRoutes = require('./routes/publicRoutes');
 
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -33,6 +36,8 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/bids', bidRoutes);
 app.use('/api/public', publicRoutes);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
 startCronJobs();

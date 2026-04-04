@@ -17,6 +17,15 @@ const requireApiKey = async (req, res, next) => {
             return res.status(403).json({ message: 'Invalid, revoked, or expired API Key.' });
         }
 
+        await prisma.token.update({
+            where: { id: tokenRecord.id },
+            data: { 
+                usageCount: { increment: 1 },
+                lastUsedAt: new Date()
+            }
+        });
+        
+
         next();
     } catch (error) {
         res.status(500).json({ message: 'Internal server error during authentication' });
