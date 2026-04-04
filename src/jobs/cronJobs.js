@@ -10,6 +10,7 @@ const startCronJobs = () => {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
+
             const winningBid = await prisma.bid.findFirst({
                 where: { 
                     targetDate: today, 
