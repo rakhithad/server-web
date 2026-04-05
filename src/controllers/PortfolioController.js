@@ -54,7 +54,6 @@ class PortfolioController {
         }
     }
 
-    //EMPLOYMENT
     static async addEmployment(req, res) {
         try {
             const errors = validationResult(req);
@@ -93,6 +92,89 @@ class PortfolioController {
             res.status(500).json({ message: 'Error deleting employment or unauthorized' });
         }
     }
+
+    static async addCertification(req, res) {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+            const profileId = await PortfolioController.#getProfileId(req.user.userId);
+            const { title, awardingBody, courseUrl, completionDate } = req.body;
+
+            const certification = await prisma.certification.create({
+                data: { profileId, title, awardingBody, courseUrl, completionDate: new Date(completionDate) }
+            });
+            res.status(201).json({ message: 'Certification added', certification });
+        } catch (error) {
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
+    static async deleteCertification(req, res) {
+        try {
+            const profileId = await PortfolioController.#getProfileId(req.user.userId);
+            await prisma.certification.delete({ where: { id: parseInt(req.params.id), profileId } });
+            res.status(200).json({ message: 'Certification deleted' });
+        } catch (error) {
+            res.status(500).json({ message: 'Error deleting item' });
+        }
+    }
+
+    static async addLicence(req, res) {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+            const profileId = await PortfolioController.#getProfileId(req.user.userId);
+            const { title, awardingBody, licenceUrl, completionDate } = req.body;
+
+            const licence = await prisma.licence.create({
+                data: { profileId, title, awardingBody, licenceUrl, completionDate: new Date(completionDate) }
+            });
+            res.status(201).json({ message: 'Licence added', licence });
+        } catch (error) {
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
+    static async deleteLicence(req, res) {
+        try {
+            const profileId = await PortfolioController.#getProfileId(req.user.userId);
+            await prisma.licence.delete({ where: { id: parseInt(req.params.id), profileId } });
+            res.status(200).json({ message: 'Licence deleted' });
+        } catch (error) {
+            res.status(500).json({ message: 'Error deleting item' });
+        }
+    }
+
+    static async addCourse(req, res) {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+            const profileId = await PortfolioController.#getProfileId(req.user.userId);
+            const { title, provider, courseUrl, completionDate } = req.body;
+
+            const course = await prisma.course.create({
+                data: { profileId, title, provider, courseUrl, completionDate: new Date(completionDate) }
+            });
+            res.status(201).json({ message: 'Course added', course });
+        } catch (error) {
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
+    static async deleteCourse(req, res) {
+        try {
+            const profileId = await PortfolioController.#getProfileId(req.user.userId);
+            await prisma.course.delete({ where: { id: parseInt(req.params.id), profileId } });
+            res.status(200).json({ message: 'Course deleted' });
+        } catch (error) {
+            res.status(500).json({ message: 'Error deleting item' });
+        }
+    }
+
+
 }
 
 module.exports = PortfolioController;

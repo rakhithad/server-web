@@ -14,4 +14,25 @@ const employmentValidation = [
     body('endDate').optional({ nullable: true }).isISO8601().withMessage('End date must be a valid date')
 ];
 
-module.exports = { degreeValidation, employmentValidation };
+const certificationValidation = [
+    body('title').notEmpty().withMessage('Certification title is required'),
+    body('awardingBody').notEmpty().withMessage('Awarding body is required'),
+    body('courseUrl').isURL().withMessage('Must be a valid course URL'),
+    body('completionDate').isISO8601().withMessage('Valid completion date required')
+];
+
+const licenceValidation = [
+    body('title').notEmpty().withMessage('Licence title is required'),
+    body('awardingBody').notEmpty().withMessage('Awarding body is required'),
+    body('licenceUrl').isURL().withMessage('Must be a valid licence URL'),
+    body('completionDate').isISO8601().withMessage('Valid completion date required')
+];
+
+const courseValidation = [
+    body('title').notEmpty().withMessage('Course title is required'),
+    body('provider').notEmpty().withMessage('Course provider is required'),
+    body('courseUrl').isURL().withMessage('Must be a valid course URL'),
+    body('completionDate').isISO8601().withMessage('Valid completion date required')
+];
+
+module.exports = { degreeValidation, employmentValidation, certificationValidation, licenceValidation, courseValidation };
