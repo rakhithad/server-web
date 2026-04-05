@@ -26,6 +26,8 @@ router.post('/reset-password/:token', passwordResetValidation, AuthController.re
 router.post('/api-key', requireAuth, AuthController.generateApiKey);
 router.post('/revoke-key', requireAuth, AuthController.revokeApiKey);
 
+router.post('/logout', requireAuth, AuthController.logout);
+
 
 
 module.exports = router;

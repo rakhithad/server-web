@@ -264,6 +264,29 @@ class AuthController {
         }
     }
 
+    static async logout(req, res) {
+        try {
+            const authHeader = req.headers.authorization;
+            const token = authHeader.split(' ')[1];
+            
+            const decoded = jwt.decode(token);
+
+            await prisma.token.create({
+                data: {
+                    userId: req.user.userId,
+                    token: token,
+                    type: 'BLACKLIST',
+                    expiresAt: new Date(decoded.exp * 1000) 
+                }
+            });
+
+            res.status(200).json({ message: 'Successfully logged out securely.' });
+        } catch (error) {
+            console.error('Logout Error:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+
 
 }
 
