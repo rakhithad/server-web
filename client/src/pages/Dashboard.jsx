@@ -1,26 +1,41 @@
 // client/src/pages/Dashboard.jsx
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const Dashboard = () => {
-  // Simulated Raw Data for Export
-  const rawData = [
-    { id: 1, name: "John Doe", programme: "Computer Science", year: 2024, industry: "Tech", role: "Software Engineer" },
-    { id: 2, name: "Jane Smith", programme: "Business", year: 2023, industry: "Finance", role: "Analyst" },
-    { id: 3, name: "Sam Wilson", programme: "Computer Science", year: 2024, industry: "Tech", role: "Cloud Architect" },
-  ];
+  const [kpis, setKpis] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // CSV GENERATION FUNCTION (5 Marks!)
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/analytics/dashboard', {
+          headers: {
+            'x-api-key': 'ak_dashboard_12345'
+          }
+        });
+        setKpis(response.data.data.kpis);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching dashboard data", err);
+        setLoading(false);
+      }
+    };
+    fetchDashboardData();
+  }, []);
+
   const exportToCSV = () => {
-    // 1. Create CSV Headers
     const headers = ["ID", "Name", "Programme", "Graduation Year", "Industry", "Job Role"];
+    const rawData = [
+      { id: 1, name: "System User", programme: "Computer Science", year: 2024, industry: kpis?.topIndustry || "Tech", role: "Software Engineer" }
+    ];
     
-    // 2. Map data into CSV rows
     const csvRows = [
-      headers.join(','), // Header row
+      headers.join(','),
       ...rawData.map(row => `${row.id},"${row.name}","${row.programme}",${row.year},"${row.industry}","${row.role}"`)
     ];
 
-    // 3. Create a Blob and trigger download
     const csvContent = csvRows.join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -31,6 +46,8 @@ const Dashboard = () => {
     link.click();
     document.body.removeChild(link);
   };
+
+  if (loading) return <div style={{ padding: '3rem', textAlign: 'center' }}>Loading Dashboard...</div>;
 
   return (
     <div style={styles.container}>
@@ -44,15 +61,14 @@ const Dashboard = () => {
         </button>
       </div>
 
-      {/* SUMMARY STATS (KPI Cards) */}
       <div style={styles.kpiGrid}>
         <div style={styles.kpiCard}>
           <h4 style={styles.kpiTitle}>Total Registered Alumni</h4>
-          <h2 style={styles.kpiValue}>1,245</h2>
+          <h2 style={styles.kpiValue}>{kpis?.totalAlumni || 0}</h2>
         </div>
         <div style={styles.kpiCard}>
           <h4 style={styles.kpiTitle}>Post-Grad Employment</h4>
-          <h2 style={styles.kpiValue}>92%</h2>
+          <h2 style={styles.kpiValue}>{kpis?.employmentRate || "N/A"}</h2>
         </div>
         <div style={styles.kpiCard}>
           <h4 style={styles.kpiTitle}>Emerging Skill Alert</h4>
@@ -60,11 +76,10 @@ const Dashboard = () => {
         </div>
         <div style={styles.kpiCard}>
           <h4 style={styles.kpiTitle}>Top Industry</h4>
-          <h2 style={styles.kpiValue}>Technology</h2>
+          <h2 style={styles.kpiValue}>{kpis?.topIndustry || "Technology"}</h2>
         </div>
       </div>
 
-      {/* QUICK ACTIONS */}
       <div style={styles.actionPanel}>
         <h3>Strategic Insights Required</h3>
         <p>Curriculum gaps have been detected in the Computer Science department regarding Cloud Infrastructure.</p>

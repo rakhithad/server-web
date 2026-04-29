@@ -1,5 +1,6 @@
 // client/src/pages/Graphs.jsx
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import {
   Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, RadialLinearScale, Filler
 } from 'chart.js';
@@ -9,6 +10,9 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 
 const Graphs = () => {
   const [filters, setFilters] = useState({ programme: 'All', year: 'All', industry: 'All' });
+  const [analyticsData, setAnalyticsData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   const industryRef = useRef(null);
   const skillsRef = useRef(null);
@@ -17,14 +21,24 @@ const Graphs = () => {
   const geoRef = useRef(null);
   const salaryRef = useRef(null);
 
-  const analyticsData = {
-    industries: { labels: ['Tech', 'Finance', 'Healthcare', 'Education', 'Retail'], data: [45, 25, 15, 10, 5] },
-    skillsGap: { labels: ['Docker', 'AWS', 'Python', 'Agile', 'React'], data: [75, 60, 80, 55, 90] },
-    employmentTrend: { labels: ['2021', '2022', '2023', '2024', '2025'], data: [80, 85, 88, 92, 95] },
-    jobTitles: { labels: ['Software Eng', 'Data Analyst', 'Product Mgr', 'Consultant'], data: [120, 80, 45, 30] },
-    geography: { labels: ['London', 'Manchester', 'Remote (UK)', 'International'], data: [50, 20, 20, 10] },
-    salary: { labels: ['£20k-30k', '£30k-45k', '£45k-60k', '£60k+'], data: [15, 40, 30, 15] }
-  };
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/analytics/dashboard', {
+          headers: {
+            'x-api-key': 'ak_dashboard_12345' 
+          }
+        });
+        setAnalyticsData(response.data.data.charts);
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to fetch real data. Is your Express server running?');
+        setLoading(false);
+      }
+    };
+    fetchAnalytics();
+  }, []);
 
   const downloadChart = (chartRef, fileName) => {
     const chart = chartRef.current;
@@ -36,6 +50,10 @@ const Graphs = () => {
       link.click();
     }
   };
+
+  if (loading) return <div style={{ padding: '3rem', textAlign: 'center', fontSize: '1.2rem' }}>Loading Live Analytics from Database...</div>;
+  if (error) return <div style={{ padding: '3rem', textAlign: 'center', color: 'red' }}>{error}</div>;
+  if (!analyticsData) return null;
 
   return (
     <div style={styles.container}>
@@ -110,7 +128,6 @@ const Graphs = () => {
           </div>
           <PolarArea ref={salaryRef} data={{ labels: analyticsData.salary.labels, datasets: [{ data: analyticsData.salary.data, backgroundColor: ['rgba(59, 130, 246, 0.5)', 'rgba(16, 185, 129, 0.5)', 'rgba(245, 158, 11, 0.5)', 'rgba(239, 68, 68, 0.5)'] }] }} options={{ maintainAspectRatio: false }} />
         </div>
-
       </div>
     </div>
   );
