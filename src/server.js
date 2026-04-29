@@ -11,9 +11,10 @@ const bidRoutes = require('./routes/bidRoutes');
 const { startCronJobs } = require('./jobs/cronJobs');
 const publicRoutes = require('./routes/publicRoutes');
 
+
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
-
+const analyticsRoutes = require('./routes/analytics');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,6 +28,7 @@ app.use(express.json());
 app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'success', message: 'API is running smoothly!' });
 });
+app.use('/api/analytics', analyticsRoutes);
 
 
 

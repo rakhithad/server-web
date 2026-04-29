@@ -107,6 +107,8 @@ model Token {
   createdAt DateTime @default(now())
 
   usageCount  Int      @default(0)
+
+  permissions String[] @default([])
   lastUsedAt  DateTime?
 }
 
